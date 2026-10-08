@@ -5,6 +5,23 @@
 [![Build Status](https://github.com/JuliaSMLM/ModelContextProtocol.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/JuliaSMLM/ModelContextProtocol.jl/actions/workflows/CI.yml?query=branch%3Amain)
 [![Coverage](https://codecov.io/gh/JuliaSMLM/ModelContextProtocol.jl/branch/main/graph/badge.svg)](https://codecov.io/gh/JuliaSMLM/ModelContextProtocol.jl)
 
+> **This is a fork** of
+> [JuliaSMLM/ModelContextProtocol.jl](https://github.com/JuliaSMLM/ModelContextProtocol.jl),
+> registered in [ProjecturedRegistry](https://github.com/projectured/ProjecturedRegistry).
+> It is upstream 0.7.0 with one addition: `request_meta(ctx)` gives a tool
+> handler the `_meta` object of its request. Claude Code, for example, sends
+> the id of the tool call of its model there as `claudecode/toolUseId`. The
+> fork has a UUID of its own, so it does not clash with the package in General.
+> To install it, add the registry and then the package:
+>
+> ```
+> pkg> registry add https://github.com/projectured/ProjecturedRegistry
+> pkg> add ModelContextProtocol
+> ```
+>
+> When both registries hold the name, Pkg asks which package you mean; pick the
+> one of ProjecturedRegistry.
+
 A Julia implementation of the [Model Context Protocol](https://github.com/modelcontextprotocol) (MCP), enabling integration with Large Language Models (LLMs) like Anthropic's Claude by providing standardized access to tools, resources, and prompts.
 
 ## Overview

@@ -1,6 +1,6 @@
 name = "ModelContextProtocol"
-uuid = "c58f755f-f2a7-4f48-bf29-4e9659b78499"
-version = "0.7.0"
+uuid = "318f8e74-e016-4659-bb5b-d8af92946dd5"
+version = "0.7.1"
 authors = ["klidke@unm.edu"]
 
 [deps]

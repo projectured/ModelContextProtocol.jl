@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.7.1] - 2026-10-08
+
+The first version of the fork of Projectured, registered in ProjecturedRegistry
+with a UUID of its own.
+
+### Added
+
+- `request_meta(ctx)` returns the `_meta` object of the params of the request
+  that a tool handler serves, as the raw parsed JSON object, or `nothing`. A
+  client can put keys of its own there; Claude Code sends the id of the tool
+  call of its model as `claudecode/toolUseId`. `RequestMeta` keeps the object
+  as `raw`, and every `RequestContext` carries it as `meta`.
+
 ## [0.7.0] - 2026-08-09
 
 **Full server-side support for the MCP 2026-07-28 specification.** This
