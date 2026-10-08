@@ -28,6 +28,9 @@ A non-`nothing` `protocol_version` marks the request as modern-era (stateless, n
 - `has_log_level::Bool`: Whether the `logLevel` key was present at all. Presence is
   tracked separately from the typed value so a present-but-invalid level is
   REJECTED (-32602 per the spec), never silently treated as absent
+- `raw::Any`: The whole `_meta` object, kept as the raw parsed JSON object, with
+  the keys that a client adds of its own, such as `claudecode/toolUseId`;
+  `nothing` when the params carry no object `_meta`
 """
 Base.@kwdef struct RequestMeta
     progress_token::Union{ProgressToken,Nothing} = nothing
@@ -46,6 +49,7 @@ Base.@kwdef struct RequestMeta
     has_input_responses::Bool = false
     has_request_state::Bool = false
     params_digest::Union{Nothing,String} = nothing  # canonical digest of the params sans _meta/retry fields
+    raw::Any = nothing  # the whole params._meta object, kept as the raw parsed JSON object; nothing when absent or not an object
 end
 
 """

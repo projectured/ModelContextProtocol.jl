@@ -124,6 +124,7 @@ export
     # Advanced features
     Server,  # For type annotations in user code
     send_progress,  # Progress reporting from tool handlers (RequestContext is intentionally not exported)
+    request_meta,  # The _meta object of the request that a handler serves
     task_cancelled,  # Cooperative cancellation check inside task-augmented tool handlers
     task_detach,  # Hand a modern-era tool call off to background task execution (tasks extension, SEP-2663)
     task_await_input, TaskCancelledException,  # Mid-task client input from a detached handler (tasks extension, SEP-2663)

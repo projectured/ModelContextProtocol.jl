@@ -650,7 +650,8 @@ function serve_modern(server::Server, request::Request, version::String, mrtr_st
         input_responses = request.meta.input_responses,
         input_state = mrtr_state,
         client_capabilities = request.meta.client_capabilities,
-        params_digest = request.meta.params_digest
+        params_digest = request.meta.params_digest,
+        meta = request.meta.raw
     )
 
     request_start = time()

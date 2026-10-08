@@ -167,6 +167,7 @@ function parse_request(raw::JSON3.Object)::Request
     # treated as absent, and the capability/info objects are kept as raw parsed
     # views (no re-encoding copy).
     progress_token = nothing
+    raw_meta = nothing
     protocol_version = nothing
     client_capabilities = nothing
     client_info = nothing
@@ -175,6 +176,7 @@ function parse_request(raw::JSON3.Object)::Request
     if haskey(raw, :params) && raw.params isa JSON3.Object && haskey(raw.params, :_meta)
         meta = raw.params._meta
         if meta isa JSON3.Object
+            raw_meta = meta
             if haskey(meta, :progressToken)
                 progress_token = meta.progressToken
             end
@@ -260,6 +262,7 @@ function parse_request(raw::JSON3.Object)::Request
         params = typed_params,
         meta = RequestMeta(
             progress_token = progress_token,
+            raw = raw_meta,
             protocol_version = protocol_version,
             client_capabilities = client_capabilities,
             client_info = client_info,

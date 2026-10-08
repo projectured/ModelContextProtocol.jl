@@ -507,3 +507,47 @@ end
         @test "test://via-wire" in state.wire_subscriptions
     end
 end
+
+@testset "Request _meta" begin
+    @testset "parse_request keeps the whole params._meta" begin
+        raw = """
+        {"jsonrpc":"2.0","id":1,"method":"tools/call",
+         "params":{"name":"x","arguments":{},
+                   "_meta":{"claudecode/toolUseId":"toolu_1","progressToken":2}}}
+        """
+        req = ModelContextProtocol.parse_message(raw)
+        @test get(req.meta.raw, "claudecode/toolUseId", nothing) == "toolu_1"
+        @test req.meta.progress_token == 2
+        bare = ModelContextProtocol.parse_message(
+            """{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"x","arguments":{}}}""")
+        @test bare.meta.raw === nothing
+    end
+
+    @testset "a two-argument handler reads the _meta of its request" begin
+        tool = MCPTool(
+            name="meta_tool",
+            description="Echoes the id of the tool call that the client sent",
+            parameters=[],
+            handler=(args, ctx) -> begin
+                meta = request_meta(ctx)
+                TextContent(text=string(meta === nothing ? "none" : get(meta, "claudecode/toolUseId", "none")))
+            end
+        )
+        server = mcp_server(name="test", version="1.0.0", tools=[tool])
+        state = ServerState()
+        call(meta) = begin
+            params = Dict{String,Any}("name" => "meta_tool", "arguments" => Dict{String,Any}())
+            meta === nothing || (params["_meta"] = meta)
+            req = ModelContextProtocol.parse_message(JSON3.write(Dict(
+                "jsonrpc" => "2.0", "id" => 3, "method" => "tools/call", "params" => params)))
+            ModelContextProtocol.handle_request(server, state, req).result.content[1]["text"]
+        end
+        @test call(Dict("claudecode/toolUseId" => "toolu_2")) == "toolu_2"
+        @test call(nothing) == "none"
+    end
+
+    @testset "request_meta is nothing in a context made by hand" begin
+        server = mcp_server(name="test", version="1.0.0")
+        @test request_meta(RequestContext(server=server)) === nothing
+    end
+end

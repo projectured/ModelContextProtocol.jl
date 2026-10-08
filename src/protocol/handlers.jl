@@ -19,6 +19,8 @@ Store the current request context for MCP protocol handlers.
 - `state::ServerState`: The persistent server state, carrying the negotiated protocol version for feature gating (see `supports`)
 - `request_id::Union{RequestId,Nothing}`: The ID of the current request (if any)
 - `progress_token::Union{ProgressToken,Nothing}`: Optional token for progress reporting
+- `meta::Any`: The whole `_meta` object of the params of the request, read with
+  `request_meta(ctx)`
 """
 Base.@kwdef mutable struct RequestContext
     server::Server
@@ -33,7 +35,27 @@ Base.@kwdef mutable struct RequestContext
     client_capabilities::Any = nothing  # modern-era _meta clientCapabilities (raw parsed view); nothing on legacy requests
     params_digest::Union{Nothing,String} = nothing  # canonical params digest of a modern MRTR-method request
     detach::Union{Nothing,TaskDetachState} = nothing  # set for detachable modern tool calls (tasks extension); enables task_detach(ctx)
+    meta::Any = nothing  # the whole params._meta of the request (raw parsed view); read via request_meta(ctx)
 end
+
+"""
+    request_meta(ctx::RequestContext) -> Any
+
+Return the `_meta` object that the client sent in the params of this request.
+
+A client can put keys of its own there. Claude Code, for example, sends the id
+of the tool call of its model as `claudecode/toolUseId`, so a tool handler can
+tie its work to that call. The object is the raw parsed JSON object, so read a
+key with `get(meta, "claudecode/toolUseId", nothing)`. Its values come from the
+client, so check their types before use.
+
+# Arguments
+- `ctx::RequestContext`: The context of the request that a handler serves
+
+# Returns
+- `Any`: The parsed `_meta` object, or `nothing` when the request carried none
+"""
+request_meta(ctx::RequestContext) = ctx.meta
 
 """
     request_protocol_version(ctx::RequestContext) -> Union{String,Nothing}
@@ -1606,7 +1628,8 @@ function spawn_task_execution!(ctx::RequestContext, tool::MCPTool, args::Abstrac
         request_id=ctx.request_id,
         progress_token=ctx.progress_token,
         authenticated_user=ctx.authenticated_user,
-        task=record
+        task=record,
+        meta=ctx.meta
     )
     Threads.@spawn begin
         outcome = try
@@ -1999,7 +2022,8 @@ function handle_request(server::Server, state::ServerState, request::Request;
         state=state,
         request_id=request.id,
         progress_token=request.meta.progress_token,
-        authenticated_user=authenticated_user
+        authenticated_user=authenticated_user,
+        meta=request.meta.raw
     )
 
     request_start = time()
