@@ -1,6 +1,6 @@
 [deps]
 JSON3 = "0f8b85d8-7281-11e9-16c2-39a750bddbf1"
-ModelContextProtocol = "c58f755f-f2a7-4f48-bf29-4e9659b78499"
+ModelContextProtocol = "318f8e74-e016-4659-bb5b-d8af92946dd5"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [compat]
